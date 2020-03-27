@@ -1,13 +1,14 @@
 import React, { Component } from "react";
-import { connect } from "react-redux"; 
+import { connect } from "react-redux";
 import * as usuariosActions from "../../actions/usuariosActions";
+import Loader from "../Loader";
+import Tabla from "./Tabla";
 
 /*
   Componentes funcionales (Stateless), se declaran como funcion.
   Componentes clase (Stateful), se declaran como clases.
 */
 class Usuarios extends Component {
-
   ponerFilas = () =>
     this.props.usuarios.map(usuario => (
       <tr key={usuario.id}>
@@ -21,27 +22,25 @@ class Usuarios extends Component {
     this.props.traerTodos();
   }
 
- 
   render() {
+    if (this.props.loading) {
+      return <Loader />;
+    }
+
+    if (this.props.error) {
+      return (
+        <h3 className="text-danger">{`Error: ${this.props.error.message}`}</h3>
+      );
+    }
+
     return (
-      <div className="margen">
-        <table className="table">
-          <thead className="thead-dark">
-            <tr>
-              <th scope="col">Nombre</th>
-              <th scope="col">Email</th>
-              <th scope="col">Enlace</th>
-            </tr>
-          </thead>
-          <tbody>{this.ponerFilas()}</tbody>
-        </table>
-      </div>
+      <Tabla ponerFilas={this.ponerFilas}/>
     );
   }
 }
 
 // mapeamos el state a los props.
-const mapStateToProps = (reducers) => {
+const mapStateToProps = reducers => {
   return reducers.usuariosReducer;
 };
 
