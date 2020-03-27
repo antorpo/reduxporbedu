@@ -1,84 +1,29 @@
-import React, { Component } from "react";
-import axios from "axios";
-import Loader from "../components/Loader";
+import React from "react";
+import { BrowserRouter, Route, Switch, Redirect} from "react-router-dom";
+import Menu from "./Menu";
+import Usuarios from "./usuarios";
 
-/*
-  Componentes funcionales (Stateless), se declaran como funcion.
-  Componentes clase (Stateful), se declaran como clases.
-*/
-class App extends Component {
-  constructor(props) {
-    super(props);
+function Tareas(props) {
+  return <h1>Tareas Working!</h1>;
+}
 
-    this.state = {
-      usuarios: [],
-      loading: true,
-      error: null
-    };
-  }
+function NotFound(props){
+  return <h1>Error 404: Not found!</h1>
+}
 
-  ponerFilas = () =>
-    this.state.usuarios.map(usuario => (
-      <tr key={usuario.id}>
-        <td>{usuario.name}</td>
-        <td>{usuario.email}</td>
-        <td>{usuario.website}</td>
-      </tr>
-    ));
+function App(props) {
+  return (
+    <BrowserRouter>
+      <Menu />
 
-  componentDidMount() {
-    this.fetchData();
-  }
-
-  fetchData = async () => {
-    this.setState({
-      loading: true,
-      error: null
-    });
-
-    try {
-      const response = await axios.get(
-        "https://jsonplaceholder.typicode.com/users"
-      );
-
-      this.setState({
-        loading: false,
-        usuarios: response.data
-      });
-    } catch (error) {
-      this.setState({
-        loading: false,
-        error: error
-      });
-    }
-  };
-
-  render() {
-    if (this.state.loading) {
-      return <Loader />;
-    }
-
-    if (this.state.error) {
-      return (
-        <h3 className="text-danger">{`Error: ${this.state.error.message}`}</h3>
-      );
-    }
-
-    return (
-      <div className="margen">
-        <table className="table">
-          <thead className="thead-dark">
-            <tr>
-              <th scope="col">Nombre</th>
-              <th scope="col">Email</th>
-              <th scope="col">Enlace</th>
-            </tr>
-          </thead>
-          <tbody>{this.ponerFilas()}</tbody>
-        </table>
-      </div>
-    );
-  }
+      <Switch>
+        <Route exact path="/" component={Usuarios} />
+        <Route exact path="/tareas" component={Tareas} />
+        <Route exact path="/404" component={NotFound} />
+        <Redirect from="*" to="/404"/>
+      </Switch>
+    </BrowserRouter>
+  );
 }
 
 export default App;
