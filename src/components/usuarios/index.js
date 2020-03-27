@@ -9,14 +9,6 @@ import Tabla from "./Tabla";
   Componentes clase (Stateful), se declaran como clases.
 */
 class Usuarios extends Component {
-  ponerFilas = () =>
-    this.props.usuarios.map(usuario => (
-      <tr key={usuario.id}>
-        <td>{usuario.name}</td>
-        <td>{usuario.email}</td>
-        <td>{usuario.website}</td>
-      </tr>
-    ));
 
   componentDidMount() {
     this.props.traerTodos();
@@ -34,7 +26,10 @@ class Usuarios extends Component {
     }
 
     return (
-      <Tabla ponerFilas={this.ponerFilas}/>
+      <React.Fragment>
+        <h1>Usuarios</h1>
+        <Tabla />
+      </React.Fragment>
     );
   }
 }
