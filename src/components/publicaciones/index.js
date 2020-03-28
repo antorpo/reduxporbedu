@@ -3,10 +3,15 @@ import { connect } from "react-redux";
 import * as usuariosActions from "../../actions/usuariosActions";
 import * as publicacionesActions from "../../actions/publicacionesActions";
 import Loader from "../Loader";
+import Comentarios from "./Comentarios";
 
 // Al haber llamado igual los actions aca desestructuramos para poder diferenciar:
 const { traerTodos: usuariosTraerTodos } = usuariosActions;
-const { traerPorUsuario: publicacionesTraerPorUsuario } = publicacionesActions;
+const {
+  traerPorUsuario: publicacionesTraerPorUsuario,
+  abrirCerrar,
+  traerComentarios
+} = publicacionesActions;
 
 class Publicaciones extends Component {
   async componentDidMount() {
@@ -89,12 +94,31 @@ class Publicaciones extends Component {
 
     const { publicaciones_key } = usuarios[key];
 
-    return publicaciones[publicaciones_key].map(publicacion => (
-      <div className="pub_titulo">
+    return this.mostrarInfo(
+      publicaciones[publicaciones_key],
+      publicaciones_key
+    );
+  };
+
+  mostrarInfo = (publicaciones, pub_key) =>
+    publicaciones.map((publicacion, com_key) => (
+      <div
+        className="pub_titulo"
+        key={publicacion.id}
+        onClick={() =>
+          this.mostrarComentarios(pub_key, com_key, publicacion.comentarios)
+        }
+      >
         <h3>{publicacion.title}</h3>
         <p>{publicacion.body}</p>
+
+        {publicacion.abierto ? <Comentarios /> : ""}
       </div>
     ));
+
+  mostrarComentarios = (pub_key, com_key, comentarios) => {
+    this.props.abrirCerrar(pub_key, com_key);
+    this.props.traerComentarios(pub_key, com_key);
   };
 
   render() {
@@ -114,7 +138,9 @@ const mapStateToProps = ({ usuariosReducer, publicacionesReducer }) => {
 
 const mapDispacthToProps = {
   usuariosTraerTodos,
-  publicacionesTraerPorUsuario
+  publicacionesTraerPorUsuario,
+  abrirCerrar,
+  traerComentarios
 };
 
 export default connect(mapStateToProps, mapDispacthToProps)(Publicaciones);
