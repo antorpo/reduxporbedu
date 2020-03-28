@@ -10,38 +10,99 @@ const { traerPorUsuario: publicacionesTraerPorUsuario } = publicacionesActions;
 
 class Publicaciones extends Component {
   async componentDidMount() {
+    const {
+      usuariosTraerTodos,
+      match: {
+        params: { key }
+      },
+      publicacionesTraerPorUsuario
+    } = this.props;
+
     /* 
        Volvemos asincrono el metodo para esperar siempre 
        que se ejecute primero traer los usuarios, y luego
        traer las publicaciones para no tener un error.
     */
     if (!this.props.usuariosReducer.usuarios.length) {
-      await this.props.usuariosTraerTodos();
+      await usuariosTraerTodos();
     }
 
-    this.props.publicacionesTraerPorUsuario(this.props.match.params.key);
+    if (!("publicaciones_key" in this.props.usuariosReducer.usuarios[key])) {
+      await publicacionesTraerPorUsuario(key);
+    }
   }
 
-  render() {
-    const keyUser = this.props.match.params.key;
-    console.log(this.props);
+  ponerUsuario = () => {
+    const {
+      usuariosReducer,
+      match: {
+        params: { key }
+      }
+    } = this.props;
 
-    if (
-      this.props.publicacionesReducer.loading ||
-      this.props.usuariosReducer.loading
-    ) {
-      return <Loader />;
-    }
-
-    if (this.props.publicacionesReducer.error) {
+    if (usuariosReducer.error) {
       return (
-        <h3 className="text-danger">{`Error: ${this.props.publicacionesReducer.error.message}`}</h3>
+        <h3 className="text-danger">{`Error: ${usuariosReducer.error}`}</h3>
       );
     }
 
+    if (!usuariosReducer.usuarios.length || usuariosReducer.cargando) {
+      return <Loader />;
+    }
+
+    const nombre = usuariosReducer.usuarios[key].name;
+
     return (
       <div className="margen">
-        <h1>Publicaciones de {keyUser}</h1>
+        <h1>Publicaciones de {nombre}</h1>
+      </div>
+    );
+  };
+
+  ponerPublicaciones = () => {
+    const {
+      usuariosReducer,
+      usuariosReducer: { usuarios },
+      publicacionesReducer,
+      publicacionesReducer: { publicaciones },
+      match: {
+        params: { key }
+      }
+    } = this.props;
+
+    if (!usuarios.length) return; // No retornamos nada.
+    if (usuariosReducer.error) return; // No hacemos nada porque este error ya se maneja en ponerUsuario().
+
+    if (publicacionesReducer.loading) {
+      return <Loader />;
+    }
+
+    if (publicacionesReducer.error) {
+      return (
+        <h3 className="text-danger">{`Error: ${publicacionesReducer.error}`}</h3>
+      );
+    }
+
+    if (!publicaciones.length) return;
+
+    if (!("publicaciones_key" in usuarios[key])) return;
+
+    const { publicaciones_key } = usuarios[key];
+
+    return publicaciones[publicaciones_key].map(publicacion => (
+      <div className="pub_titulo">
+        <h3>{publicacion.title}</h3>
+        <p>{publicacion.body}</p>
+      </div>
+    ));
+  };
+
+  render() {
+    console.log(this.props);
+    return (
+      <div>
+        {this.ponerUsuario()}
+        {this.ponerPublicaciones()}
       </div>
     );
   }

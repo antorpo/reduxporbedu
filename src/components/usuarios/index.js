@@ -11,7 +11,14 @@ import Tabla from "./Tabla";
 class Usuarios extends Component {
 
   componentDidMount() {
-    this.props.traerTodos();
+    /*
+      Miramos si no hay usuarios para traerlos solo una vez y 
+      asi no estar llamando el metodo. (Esto funciona en este
+      caso ya que no se crean usuarios nuevos)
+    */
+    if(!this.props.usuarios.length){
+      this.props.traerTodos();
+    }
   }
 
   render() {
