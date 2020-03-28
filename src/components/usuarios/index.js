@@ -27,7 +27,7 @@ class Usuarios extends Component {
 
     return (
       <React.Fragment>
-        <h1>Usuarios</h1>
+        <h1 className="margen">Usuarios</h1>
         <Tabla />
       </React.Fragment>
     );
