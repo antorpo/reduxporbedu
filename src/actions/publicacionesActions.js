@@ -1,5 +1,6 @@
 import axios from "axios";
-import { LOADING, ERROR, ACTUALIZAR } from "../types/publicacionesTypes";
+import { LOADING, ERROR, ACTUALIZAR, COM_LOADING,
+  COM_ERROR, COM_ACTUALIZAR} from "../types/publicacionesTypes";
 import * as usuariosTypes from "../types/usuariosTypes";
 
 /*
@@ -9,7 +10,7 @@ import * as usuariosTypes from "../types/usuariosTypes";
 const { TRAER_TODOS: USUARIOS_TRAER_TODOS } = usuariosTypes;
 
 export const traerPorUsuario = key => async (dispatch, getState) => {
-  const { usuarios } = getState().usuariosReducer;
+  let { usuarios } = getState().usuariosReducer;
   const { publicaciones } = getState().publicacionesReducer;
   const usuario_id = usuarios[key].id;
 
@@ -90,6 +91,11 @@ export const traerComentarios = (pub_key, com_key) => async (
   dispatch,
   getState
 ) => {
+
+  dispatch({
+    type: COM_LOADING
+  });
+
   const { publicaciones } = getState().publicacionesReducer;
   const seleccionada = publicaciones[pub_key][com_key];
 
@@ -109,13 +115,13 @@ export const traerComentarios = (pub_key, com_key) => async (
     publicaciones_actualizadas[pub_key][com_key] = actualizada;
 
     dispatch({
-      type: ACTUALIZAR,
+      type: COM_ACTUALIZAR,
       payload: publicaciones_actualizadas
     });
 
   } catch (error) {
     dispatch({
-      type: ERROR,
+      type: COM_ERROR,
       payload: error
     });
   }
