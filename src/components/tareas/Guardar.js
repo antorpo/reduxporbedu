@@ -2,36 +2,77 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as tareasActions from "../../actions/tareasActions";
 import Loader from "../Loader";
-import {Redirect} from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 class Guardar extends Component {
-  cambioUsuarioId = (event) => {
+  componentDidMount() {
+    const {
+      match: {
+        params: { usu_id, tar_id }
+      },
+      tareas,
+      cambioUsuarioId,
+      cambioTitulo
+    } = this.props;
+
+    if (usu_id && tar_id) {
+      const tarea = tareas[usu_id][tar_id];
+      cambioUsuarioId(tarea.userId);
+      cambioTitulo(tarea.title);
+    }
+  }
+
+  cambioUsuarioId = event => {
     this.props.cambioUsuarioId(event.target.value);
   };
 
-  cambioTitulo = (event) => {
-      this.props.cambioTitulo(event.target.value);
+  cambioTitulo = event => {
+    this.props.cambioTitulo(event.target.value);
   };
 
-  onSubmit = (event) => {
+  onSubmit = event => {
     event.preventDefault();
-    const {usuario_id, titulo, agregar} = this.props;
+    const {
+      usuario_id,
+      titulo,
+      agregar,
+      match: {
+        params: { usu_id, tar_id }
+      },
+      tareas,
+      editar
+    } = this.props;
+
     const nueva_tarea = {
-        userId: usuario_id,
-        title: titulo,
-        completed: false
+      userId: usuario_id,
+      title: titulo,
+      completed: false
     };
 
-    agregar(nueva_tarea);
+    if(usu_id && tar_id){
+      const tarea = tareas[usu_id][tar_id];
+      const tareaEditada = {
+        ...nueva_tarea,
+        completed: tarea.completed,
+        id: tarea.id
+      };
+
+      editar(tareaEditada);
+    }else{
+      agregar(nueva_tarea);
+    }
+    
   };
 
   render() {
-    if(this.props.loading){
-        return <Loader/>;
+    if (this.props.loading) {
+      return <Loader />;
     }
 
-    if(this.props.error){
-        return <h3 className="text-danger">{`Error: ${this.props.error.message}`}</h3>;
+    if (this.props.error) {
+      return (
+        <h3 className="text-danger">{`Error: ${this.props.error.message}`}</h3>
+      );
     }
 
     return (

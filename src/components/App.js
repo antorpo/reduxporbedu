@@ -20,6 +20,7 @@ function App(props) {
         <Route exact path="/tareas" component={Tareas} />
         <Route exact path="/publicaciones/:key" component={Publicaciones} />
         <Route exact path="/tareas/guardar" component={Guardar} />
+        <Route exact path="/tareas/guardar/:usu_id/:tar_id" component={Guardar} />
         <Route exact path="/404" component={NotFound} />
         <Redirect from="*" to="/404"/>
       </Switch>
